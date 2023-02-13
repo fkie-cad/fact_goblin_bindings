@@ -12,7 +12,7 @@ pip install fact_goblin_bindings
 ## Usage
 
 ```python
-from fact_goblin_bindings use ElfFile
+from fact_goblin_bindings import ElfFile
 
 with open("/path/to/binary", "rb") as file:
     binary = file.read()
