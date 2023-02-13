@@ -1,0 +1,20 @@
+[package]
+name = "fact_goblin_bindings"
+version = "0.1.0"
+edition = "2021"
+authors = ["Enkelmann <nils-edvin.enkelmann@fkie.fraunhofer.de>"]
+description = "Goblin bindings for parsing ELF files."
+readme = "README.md"
+homepage = "https://github.com/fkie-cad/fact_goblin_bindings"
+repository =  "https://github.com/fkie-cad/fact_goblin_bindings"
+license-file = "LICENSE"
+
+[lib]
+name = "fact_goblin_bindings"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.18.0", features = ["extension-module"] }
+goblin = "0.6"
+anyhow = "1.0"
+derive_more = "0.99"
