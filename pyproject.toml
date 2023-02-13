@@ -3,7 +3,7 @@ requires = ["maturin>=0.14,<0.15"]
 build-backend = "maturin"
 
 [project]
-name = "FACT_goblin_bindings"
+name = "fact_goblin_bindings"
 requires-python = ">=3.7"
 classifiers = [
     "Programming Language :: Rust",
