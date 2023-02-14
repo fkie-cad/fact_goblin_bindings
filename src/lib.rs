@@ -1,3 +1,4 @@
+use anyhow::anyhow;
 use derive_more::Display;
 use goblin::{
     container::Endian,
@@ -69,16 +70,24 @@ impl ElfFile {
     /// Parse an ELF file. The constructor expects the file contents as a bytes-array as input.
     #[new]
     fn new(file_content: &[u8]) -> Result<Self, ParsingError> {
-        let parsed_elf = Elf::parse(file_content)?;
-        let mut elf_file = Self::new_unparsed();
+        // We catch panics here and transform them to `ParsingError`.
+        // This way all regular errors and panics generated from this function
+        // will generate the same type of exception on the Python side.
+        match std::panic::catch_unwind(|| {
+            let parsed_elf = Elf::parse(file_content)?;
+            let mut elf_file = Self::new_unparsed();
 
-        elf_file.parse_general_information(&parsed_elf);
-        elf_file.parse_header(&parsed_elf);
-        elf_file.parse_program_headers(&parsed_elf);
-        elf_file.parse_section_headers(&parsed_elf);
-        elf_file.parse_dyn_symbols(&parsed_elf);
+            elf_file.parse_general_information(&parsed_elf);
+            elf_file.parse_header(&parsed_elf);
+            elf_file.parse_program_headers(&parsed_elf);
+            elf_file.parse_section_headers(&parsed_elf);
+            elf_file.parse_dyn_symbols(&parsed_elf);
 
-        Ok(elf_file)
+            Ok(elf_file)
+        }) {
+            Ok(result) => result,
+            Err(_err) => Err(ParsingError(anyhow!("Panic in fact_goblin_bindings."))),
+        }
     }
 }
 
