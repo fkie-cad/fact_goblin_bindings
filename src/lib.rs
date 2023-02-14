@@ -139,7 +139,10 @@ impl ElfFile {
                 } else {
                     continue;
                 };
-                if symbol.is_import() {
+                if (symbol.st_bind() == goblin::elf::sym::STB_GLOBAL
+                    || symbol.st_bind() == goblin::elf::sym::STB_WEAK)
+                    && symbol.st_size == 0
+                {
                     self.imported_functions.push(symbol_name);
                 } else {
                     self.exported_functions.push(symbol_name);
