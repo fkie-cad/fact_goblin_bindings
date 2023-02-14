@@ -59,6 +59,8 @@ struct ElfFile {
     imported_functions: Vec<String>,
     /// A lexicographically sorted list of all function exported by the ELF file.
     exported_functions: Vec<String>,
+    /// The md5-sum over the list of imported functions.
+    imphash: String,
 }
 
 /// The public methods accessible from Python.
@@ -95,6 +97,7 @@ impl ElfFile {
             dynamic_symbols: Vec::new(),
             imported_functions: Vec::new(),
             exported_functions: Vec::new(),
+            imphash: String::new(),
         }
     }
 
@@ -107,7 +110,8 @@ impl ElfFile {
     }
 
     /// Parse dynamic symbols from the ELF file.
-    /// Additionally, generate lexicographically sorted lists of all imported and exported functions.
+    /// Additionally, generate lexicographically sorted lists of all imported and exported functions
+    /// and compute a hash over all imported functions.
     fn parse_dyn_symbols(&mut self, elf: &Elf) {
         for symbol in elf.dynsyms.iter() {
             let sym = BTreeMap::from([
@@ -151,6 +155,9 @@ impl ElfFile {
         }
         self.imported_functions.sort();
         self.exported_functions.sort();
+        let imported_functions_string = self.imported_functions.join(",");
+        let imphash = md5::compute(imported_functions_string);
+        self.imphash = format!("{imphash:x}");
     }
 
     /// Parse the ELF-header.
